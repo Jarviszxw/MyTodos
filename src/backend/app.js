@@ -15,7 +15,18 @@ const config = require('./config/app');
 const app = express();
 
 // Security middleware
-app.use(helmet()); // Set secure HTTP headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "https://mytodos-udxk.onrender.com", process.env.CORS_ORIGIN || "*"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      fontSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"]
+    }
+  }
+}));
 
 // CORS configuration
 app.use(cors({
