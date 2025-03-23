@@ -9,12 +9,12 @@ const app = require('./app');
 const config = require('./config/app');
 const db = require('./models/db');
 
-// Define server port
-const PORT = config.server.port;
+// 设置端口
+const PORT = process.env.PORT || 3000;
 
-// Start the server
+// 启动服务器
 const server = app.listen(PORT, () => {
-  console.log(`Server running in ${config.server.env} mode on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
   console.log(`API available at http://localhost:${PORT}${config.api.prefix}`);
 });
 

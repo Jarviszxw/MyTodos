@@ -5,8 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="A simple and efficient todo management application">
   <meta name="theme-color" content="#4F46E5">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
   <title>MyTodos - Todo Management</title>
+  
+  <!-- Dark Mode Initialization -->
+  <script>
+    // 强制使用class策略控制暗黑模式
+    // 使用localStorage保存用户偏好
+    const darkModePreference = localStorage.getItem('darkMode');
+    
+    if (darkModePreference === 'true') {
+      document.documentElement.classList.add('dark');
+    } else if (darkModePreference === 'false') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      // 首次访问，根据系统偏好设置
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('darkMode', 'true');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('darkMode', 'false');
+      }
+    }
+  </script>
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
@@ -17,12 +39,12 @@
   <!-- Application Styles -->
   <link href="./styles/main.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+<body class="bg-white dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100">
   <div id="root">
     <!-- Loading State -->
     <div class="flex flex-col items-center justify-center min-h-screen">
       <div class="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
-      <p class="mt-4 text-lg font-medium">Loading application...</p>
+      <p class="mt-4 text-lg font-medium text-gray-700 dark:text-gray-200">Loading application...</p>
     </div>
   </div>
 

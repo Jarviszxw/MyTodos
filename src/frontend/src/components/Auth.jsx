@@ -36,8 +36,8 @@ const LoginForm = ({ onLogin, onSwitchToRegister }) => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
+    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
         Login
       </h2>
       
@@ -51,7 +51,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister }) => {
         <div className="mb-4">
           <label 
             htmlFor="username" 
-            className="block text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-gray-700 mb-2 text-sm font-medium"
           >
             Username
           </label>
@@ -60,7 +60,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister }) => {
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
             placeholder="Enter your username"
             disabled={isLoading}
           />
@@ -69,7 +69,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister }) => {
         <div className="mb-6">
           <label 
             htmlFor="password" 
-            className="block text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-gray-700 mb-2 text-sm font-medium"
           >
             Password
           </label>
@@ -78,7 +78,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister }) => {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
             placeholder="Enter your password"
             disabled={isLoading}
           />
@@ -88,7 +88,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${
+            className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               isLoading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
@@ -99,7 +99,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister }) => {
             type="button"
             onClick={onSwitchToRegister}
             disabled={isLoading}
-            className="text-blue-600 hover:text-blue-800 text-sm text-center dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-blue-600 hover:text-blue-800 text-sm text-center"
           >
             Don't have an account? Register here
           </button>
@@ -151,8 +151,8 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
+    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
         Create New Account
       </h2>
       
@@ -166,7 +166,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
         <div className="mb-4">
           <label 
             htmlFor="register-username" 
-            className="block text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-gray-700 mb-2 text-sm font-medium"
           >
             Username
           </label>
@@ -175,7 +175,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
             id="register-username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
             placeholder="Enter username"
             disabled={isLoading}
           />
@@ -184,7 +184,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
         <div className="mb-4">
           <label 
             htmlFor="register-password" 
-            className="block text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-gray-700 mb-2 text-sm font-medium"
           >
             Password
           </label>
@@ -193,7 +193,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
             id="register-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
             placeholder="Enter password"
             disabled={isLoading}
           />
@@ -202,7 +202,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
         <div className="mb-6">
           <label 
             htmlFor="confirm-password" 
-            className="block text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-gray-700 mb-2 text-sm font-medium"
           >
             Confirm Password
           </label>
@@ -211,7 +211,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
             id="confirm-password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
             placeholder="Re-enter password"
             disabled={isLoading}
           />
@@ -221,7 +221,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${
+            className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               isLoading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
@@ -232,7 +232,7 @@ const RegisterForm = ({ onRegister, onSwitchToLogin }) => {
             type="button"
             onClick={onSwitchToLogin}
             disabled={isLoading}
-            className="text-blue-600 hover:text-blue-800 text-sm text-center dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-blue-600 hover:text-blue-800 text-sm text-center"
           >
             Already have an account? Log in
           </button>
@@ -259,13 +259,13 @@ const Auth = ({ onAuthSuccess }) => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md mb-8">
-        <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-2">
+    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-gray-50">
+      <div className="w-full max-w-md mb-8 relative">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
           MyTodos
         </h1>
-        <p className="text-center text-gray-600 dark:text-gray-400">
-          Simple and efficient task management application
+        <p className="text-center text-gray-600">
+          Your simple and efficient task management
         </p>
       </div>
       

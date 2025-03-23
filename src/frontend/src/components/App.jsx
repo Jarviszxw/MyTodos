@@ -3,74 +3,66 @@ import Auth from './Auth';
 import TodoList from './TodoList';
 
 /**
- * Application Root Component
+ * App Component
+ * Main application component that manages authentication state
  */
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState('');
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Check local storage for authentication info when component mounts
+  // 检查身份验证状态
   useEffect(() => {
     checkAuth();
   }, []);
   
-  // Check authentication info in local storage
+  // Check if user is already authenticated
   const checkAuth = () => {
-    const savedToken = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
     
-    if (savedToken && savedUser) {
+    if (token && userData) {
       try {
-        const parsedUser = JSON.parse(savedUser);
-        setToken(savedToken);
+        const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
-        setIsLoggedIn(true);
+        setIsAuthenticated(true);
       } catch (error) {
-        console.error('Error parsing saved user data:', error);
-        // Clear invalid storage data
+        console.error('Failed to parse user data:', error);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     }
     
-    setIsInitialized(true);
+    setIsLoading(false);
   };
   
-  // Authentication success handler
-  const handleAuthSuccess = (userData, authToken) => {
+  // Handle successful authentication
+  const handleAuthSuccess = (userData, token) => {
     setUser(userData);
-    setToken(authToken);
-    setIsLoggedIn(true);
+    setIsAuthenticated(true);
   };
   
-  // Logout handler
+  // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
     setUser(null);
-    setToken('');
+    setIsAuthenticated(false);
   };
-  
-  // Show loading state during app initialization
-  if (!isInitialized) {
+
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="loading-spinner mx-auto"></div>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">Initializing application...</p>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-lg font-medium text-gray-700">Loading application...</p>
+        </div>
       </div>
     );
   }
-  
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-6">
-      {isLoggedIn && user ? (
-        <TodoList
-          user={user} 
-          onLogout={handleLogout} 
-        />
+    <div className="min-h-screen bg-gray-50 py-12">
+      {isAuthenticated ? (
+        <TodoList user={user} onLogout={handleLogout} />
       ) : (
         <Auth onAuthSuccess={handleAuthSuccess} />
       )}

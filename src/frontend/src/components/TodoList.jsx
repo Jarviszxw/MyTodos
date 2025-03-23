@@ -1,5 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { debounce } from 'lodash';
 import api from '../services/api';
+
+/**
+ * Todo Filters Component
+ * @param {Object} props - Component properties
+ * @param {Function} props.onFilterChange - Filter change handler
+ * @param {Function} props.onSortChange - Sort change handler
+ * @param {String} props.activeFilter - Current active filter
+ * @param {String} props.activeSort - Current active sort
+ */
+const TodoFilters = ({ onFilterChange, onSortChange, activeFilter, activeSort }) => {
+  return (
+    <div className="flex flex-col md:flex-row gap-4 mb-6">
+      <div className="w-full md:w-1/2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Filter
+        </label>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => onFilterChange('all')}
+            className={`px-4 py-2 rounded-md text-sm ${
+              activeFilter === 'all' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            All
+          </button>
+          <button 
+            onClick={() => onFilterChange('active')}
+            className={`px-4 py-2 rounded-md text-sm ${
+              activeFilter === 'active' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            Active
+          </button>
+          <button 
+            onClick={() => onFilterChange('completed')}
+            className={`px-4 py-2 rounded-md text-sm ${
+              activeFilter === 'completed' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            Completed
+          </button>
+        </div>
+      </div>
+      
+      <div className="w-full md:w-1/2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Sort By
+        </label>
+        <select
+          value={activeSort}
+          onChange={(e) => onSortChange(e.target.value)}
+          className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="alphabetical">Alphabetical</option>
+          {/* 添加注释的选项作为未来功能的提示 */}
+          <option value="priority" disabled>Priority (Coming Soon)</option>
+          <option value="dueDate" disabled>Due Date (Coming Soon)</option>
+        </select>
+      </div>
+    </div>
+  );
+};
 
 /**
  * Todo List Component
@@ -12,12 +83,87 @@ const TodoList = ({ user, onLogout }) => {
   const [newTodo, setNewTodo] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
 
   // Fetch todos when component mounts
   useEffect(() => {
     fetchTodos();
   }, []);
 
+  // Filter and sort todos
+  const filteredTodos = useMemo(() => {
+    // First filter by search query
+    let result = todos.filter(todo => 
+      todo.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    // Then filter by completion status
+    if (filter === 'active') {
+      result = result.filter(todo => !todo.completed);
+    } else if (filter === 'completed') {
+      result = result.filter(todo => todo.completed);
+    }
+    
+    // Then sort
+    return result.sort((a, b) => {
+      switch (sortBy) {
+        case 'oldest':
+          return new Date(a.created_at) - new Date(b.created_at);
+        case 'alphabetical':
+          return a.title.localeCompare(b.title);
+        case 'priority':
+          // 为未来的优先级排序做准备
+          return (b.priority || 0) - (a.priority || 0);
+        case 'dueDate':
+          // 为未来的截止日期排序做准备
+          if (!a.due_date) return 1;
+          if (!b.due_date) return -1;
+          return new Date(a.due_date) - new Date(b.due_date);
+        case 'newest':
+        default:
+          return new Date(b.created_at) - new Date(a.created_at);
+      }
+    });
+  }, [todos, searchQuery, filter, sortBy]);
+
+  // 计算任务统计
+  const todoStats = useMemo(() => {
+    const total = todos.length;
+    const completed = todos.filter(todo => todo.completed).length;
+    const active = total - completed;
+    const percentComplete = total > 0 ? Math.round((completed / total) * 100) : 0;
+    
+    return { total, completed, active, percentComplete };
+  }, [todos]);
+
+  const debouncedSetSearchQuery = useMemo(() => 
+    debounce((value) => {
+      setSearchQuery(value);
+    }, 100)
+  , []);
+
+  useEffect(() => {
+    return () => {
+      debouncedSetSearchQuery.cancel(); 
+    };
+  }, [debouncedSetSearchQuery]);
+  
+  const handleSearchChange = (e) => {
+    setInputValue(e.target.value);
+    debouncedSetSearchQuery(e.target.value);
+  };
+  
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
+  
+  const handleSortChange = (newSort) => {
+    setSortBy(newSort);
+  };
+  
   // Fetch all todos
   const fetchTodos = async () => {
     try {
@@ -90,12 +236,12 @@ const TodoList = ({ user, onLogout }) => {
     <div className="max-w-4xl mx-auto p-4">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+        <h1 className="text-3xl font-bold text-gray-800">
           Todo List
         </h1>
         
         <div className="flex items-center">
-          <span className="mr-4 text-gray-600 dark:text-gray-300">
+          <span className="mr-4 text-gray-600">
             Welcome, {user.username}
           </span>
           <button
@@ -107,6 +253,50 @@ const TodoList = ({ user, onLogout }) => {
         </div>
       </div>
       
+      {/* Statistics Section */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-sm text-gray-500">Total</p>
+          <p className="text-2xl font-bold">{todoStats.total}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-sm text-gray-500">Active</p>
+          <p className="text-2xl font-bold text-blue-500">{todoStats.active}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-sm text-gray-500">Completed</p>
+          <p className="text-2xl font-bold text-green-500">{todoStats.completed}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-sm text-gray-500">Progress</p>
+          <div className="flex items-center">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+              <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${todoStats.percentComplete}%` }}></div>
+            </div>
+            <span className="text-sm font-medium">{todoStats.percentComplete}%</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Search Bar */}
+      <div className="mb-8">
+        <input
+          type="text"
+          placeholder="Search todos..."
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+          value={inputValue}
+          onChange={handleSearchChange}
+        />
+      </div>
+      
+      {/* Filters */}
+      <TodoFilters 
+        onFilterChange={handleFilterChange}
+        onSortChange={handleSortChange}
+        activeFilter={filter}
+        activeSort={sortBy}
+      />
+      
       {/* Add Todo Form */}
       <form 
         onSubmit={handleAddTodo}
@@ -117,7 +307,7 @@ const TodoList = ({ user, onLogout }) => {
           value={newTodo}
           onChange={handleInputChange}
           placeholder="Add a new todo..."
-          className="flex-grow px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          className="flex-grow px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:border-blue-500"
         />
         <button
           type="submit"
@@ -129,7 +319,7 @@ const TodoList = ({ user, onLogout }) => {
       
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 rounded">
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
           {error}
         </div>
       )}
@@ -138,23 +328,25 @@ const TodoList = ({ user, onLogout }) => {
       {isLoading ? (
         <div className="text-center py-4">
           <div className="loading-spinner mx-auto"></div>
-          <p className="text-gray-600 dark:text-gray-400 mt-4">Loading todos...</p>
+          <p className="text-gray-600 mt-4">Loading todos...</p>
         </div>
       ) : (
         /* Todo List */
         <div>
-          {todos.length === 0 ? (
-            <div className="text-center py-8 bg-gray-50 dark:bg-gray-800 rounded">
-              <p className="text-gray-600 dark:text-gray-400">
-                No todos yet. Add some tasks!
+          {filteredTodos.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50 rounded">
+              <p className="text-gray-600">
+                {todos.length === 0 
+                  ? "No todos yet. Add some tasks!" 
+                  : "No todos match your current filters."}
               </p>
             </div>
           ) : (
             <ul className="space-y-3">
-              {todos.map(todo => (
+              {filteredTodos.map(todo => (
                 <li 
                   key={todo.id}
-                  className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded shadow hover:shadow-md transition duration-300"
+                  className="flex items-center justify-between p-4 bg-white rounded shadow hover:shadow-md transition duration-300"
                 >
                   <div className="flex items-center">
                     <input
@@ -163,14 +355,14 @@ const TodoList = ({ user, onLogout }) => {
                       onChange={() => handleToggleComplete(todo.id, todo.completed)}
                       className="w-5 h-5 mr-3 cursor-pointer"
                     />
-                    <span className={`text-lg ${todo.completed ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>
+                    <span className={`text-lg ${todo.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
                       {todo.title}
                     </span>
                   </div>
                   
                   <button
                     onClick={() => handleDeleteTodo(todo.id)}
-                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none"
+                    className="text-red-500 hover:text-red-700 focus:outline-none"
                     aria-label="Delete"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -187,4 +379,4 @@ const TodoList = ({ user, onLogout }) => {
   );
 };
 
-export default TodoList; 
+export default TodoList;
