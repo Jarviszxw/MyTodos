@@ -74,7 +74,7 @@ const getTodoById = async (req, res) => {
 const createTodo = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { title, completed } = req.body;
+    const { title, completed, due_date, priority } = req.body;
     
     // Validate title
     if (!title || title.trim().length === 0) {
@@ -87,7 +87,9 @@ const createTodo = async (req, res) => {
     // Create todo
     const todoData = {
       title: title.trim(),
-      completed: completed === true
+      completed: completed === true,
+      due_date: due_date,
+      priority: priority
     };
     
     const todo = await Todo.create(todoData, userId);
@@ -114,7 +116,7 @@ const updateTodo = async (req, res) => {
   try {
     const userId = req.user.id;
     const todoId = parseInt(req.params.id);
-    const { title, completed } = req.body;
+    const { title, completed , due_date, priority } = req.body;
     
     // Validate ID
     if (isNaN(todoId)) {
@@ -125,7 +127,7 @@ const updateTodo = async (req, res) => {
     }
     
     // Validate that at least one update field is provided
-    if (title === undefined && completed === undefined) {
+    if (title === undefined && completed === undefined && due_date === undefined && priority === undefined) {
       return res.status(400).json({
         error: 'No update fields provided',
         message: 'No update fields provided'
@@ -147,6 +149,12 @@ const updateTodo = async (req, res) => {
     }
     if (completed !== undefined) {
       updateData.completed = completed === true;
+    }
+    if (due_date !== undefined) {
+      updateData.due_date = due_date;
+    }
+    if (priority !== undefined) {
+      updateData.priority = priority;
     }
     
     // Update todo

@@ -1,5 +1,6 @@
 /**
  * Main Application
+ * 执行时机：1. 在服务器启动时按顺序执行一次  2.each HTTP requests server，Express 会按照中间件的注册顺序依次调用这些中间件。
  */
 
 const express = require('express');
@@ -45,17 +46,12 @@ if (config.server.env !== 'test') {
 }
 
 // Static file service
-// app.use(express.static(path.join(__dirname, '../../frontend/public')));
 app.use(express.static(path.join(__dirname, '../../src/frontend/build')));
 
 // Register API routes
 app.use(routes);
 
 // Frontend route support
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(__dirname, '../../frontend/public/index.html'));
-// });
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../src/frontend/build/index.html'));
 });

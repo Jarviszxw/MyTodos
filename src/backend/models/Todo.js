@@ -41,11 +41,10 @@ class Todo {
    * @returns {Promise<Object>} - Newly created todo
    */
   static async create(data, userId) {
-    const { title, completed = false } = data;
-    
+    const { title, completed = false, due_date, priority } = data;
     const result = await db.query(
-      'INSERT INTO todos (title, completed, user_id) VALUES ($1, $2, $3) RETURNING *',
-      [title, completed, userId]
+      'INSERT INTO todos (title, completed, user_id, due_date, priority) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [title, completed, userId, due_date, priority]
     );
     
     return result.rows[0];
@@ -79,6 +78,16 @@ class Todo {
     if (data.completed !== undefined) {
       fields.push(`completed = $${paramCounter++}`);
       values.push(data.completed);
+    }
+
+    if (data.due_date !== undefined) {
+      fields.push(`due_date = $${paramCounter++}`);
+      values.push(data.due_date);
+    }
+
+    if (data.priority !== undefined) {
+      fields.push(`priority = $${paramCounter++}`);
+      values.push(data.priority);
     }
     
     // If no fields to update, return original todo

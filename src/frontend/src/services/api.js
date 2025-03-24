@@ -6,7 +6,8 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 // General request handler
-const handleRequest = async (url, options = {}) => {
+// options 本身是整个请求的配置，包括请求方法、请求头、请求体等
+const handleRequest = async (url, options = {}) => { 
   try {
     // Get stored authentication token
     const token = localStorage.getItem('token');
@@ -139,14 +140,13 @@ const todos = {
   
   /**
    * Create todo item
-   * @param {string} title - Todo title
-   * @param {boolean} completed - Completion status
+   * @param {Object} todoData - Todo data (title, completed, due_date, priority)
    * @returns {Promise<Object>} - Created todo
    */
-  create: async (title, completed = false) => {
+  create: async (todoData) => {
     return await handleRequest('/todos', {
       method: 'POST',
-      body: JSON.stringify({ title, completed })
+      body: JSON.stringify(todoData)
     });
   },
   
