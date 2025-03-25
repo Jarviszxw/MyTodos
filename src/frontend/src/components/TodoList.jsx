@@ -78,14 +78,15 @@ const TodoFilters = ({ onFilterChange, onSortChange, activeFilter, activeSort })
  * @param {Function} props.onLogout - Logout callback function
  */
 const TodoList = ({ user, onLogout }) => {
+  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
   const [todos, setTodos] = useState([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [newTodoPriority, setNewTodoPriority] = useState(3);
-  const [newTodoDueDate, setNewTodoDueDate] = useState('');
+  const [newTodoDueDate, setNewTodoDueDate] = useState(tomorrow);
   const [editTodoId, setEditTodoId] = useState(null);
   const [editTodoTitle, setEditTodoTitle] = useState('');
   const [editTodoPriority, setEditTodoPriority] = useState(3);
-  const [editTodoDueDate, setEditTodoDueDate] = useState('');
+  const [editTodoDueDate, setEditTodoDueDate] = useState(tomorrow);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -212,7 +213,7 @@ const TodoList = ({ user, onLogout }) => {
       setTodos([result.todo || result, ...todos]); // 兼容不同的API返回格式
       setNewTodoTitle('');
       setNewTodoPriority(3);
-      setNewTodoDueDate('');
+      setNewTodoDueDate(tomorrow);
     } catch (error) {
       console.error('Failed to add todo:', error);
       setError('Failed to add todo. Please try again.');
@@ -224,7 +225,8 @@ const TodoList = ({ user, onLogout }) => {
     setEditTodoId(todo.id);
     setEditTodoTitle(todo.title);
     setEditTodoPriority(todo.priority || 3);
-    setEditTodoDueDate(todo.due_date || '');
+    const dueDate = todo.due_date ? new Date(todo.due_date).toLocaleDateString("en-CA") : tomorrow;
+    setEditTodoDueDate(dueDate);
   };
 
   // 保存编辑的todo
@@ -252,7 +254,7 @@ const TodoList = ({ user, onLogout }) => {
       setEditTodoId(null);
       setEditTodoTitle('');
       setEditTodoPriority(3);
-      setEditTodoDueDate('');
+      setEditTodoDueDate(tomorrow);
     } catch (error) {
       console.error('Failed to update todo:', error);
       setError('Failed to update todo. Please try again.');
@@ -264,7 +266,7 @@ const TodoList = ({ user, onLogout }) => {
     setEditTodoId(null);
     setEditTodoTitle('');
     setEditTodoPriority(3);
-    setEditTodoDueDate('');
+    setEditTodoDueDate(tomorrow);
   };
 
   // Mark todo as complete/incomplete
@@ -414,6 +416,7 @@ const TodoList = ({ user, onLogout }) => {
           type="date"
           value={newTodoDueDate}
           onChange={(e) => setNewTodoDueDate(e.target.value)}
+          onClick={e => e.target.showPicker()}
           className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Select due date"
         />

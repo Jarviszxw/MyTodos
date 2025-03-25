@@ -8,6 +8,7 @@ const config = require('../config/app');
 
 const authRoutes = require('./authRoutes');
 const todoRoutes = require('./todoRoutes');
+const openaiRoutes = require('./openaiRoutes');
 
 // Versioned API path
 const apiPrefix = `${config.api.prefix}`;
@@ -15,6 +16,7 @@ const apiPrefix = `${config.api.prefix}`;
 // Register all routes
 router.use(`${apiPrefix}/auth`, authRoutes);
 router.use(`${apiPrefix}/todos`, todoRoutes);
+router.use(`${apiPrefix}/openai`, openaiRoutes);
 
 // API status check route
 router.get(`${apiPrefix}/status`, (req, res) => {
