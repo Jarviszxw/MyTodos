@@ -58,6 +58,47 @@ const handleRequest = async (url, options = {}) => {
   }
 };
 
+// 通用HTTP请求方法，用于直接调用
+const http = {
+  get: async (url, options = {}) => {
+    return await handleRequest(url, {
+      method: 'GET',
+      ...options
+    });
+  },
+  
+  post: async (url, data, options = {}) => {
+    return await handleRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      ...options
+    });
+  },
+  
+  put: async (url, data, options = {}) => {
+    return await handleRequest(url, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      ...options
+    });
+  },
+  
+  delete: async (url, options = {}) => {
+    return await handleRequest(url, {
+      method: 'DELETE',
+      ...options
+    });
+  },
+  
+  patch: async (url, data, options = {}) => {
+    return await handleRequest(url, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+      ...options
+    });
+  }
+};
+
 /**
  * Authentication related API
  */
@@ -186,8 +227,65 @@ const todos = {
   }
 };
 
+/**
+ * AI assistant related API
+ */
+const ai = {
+  /**
+   * Get AI assistance for selected todos
+   * @param {Object} promptData - Prompt data including user input and todos
+   * @returns {Promise<Object>} - AI response
+   */
+  getAssistance: async (promptData) => {
+    return await handleRequest('/ai/assistance', {
+      method: 'POST',
+      body: JSON.stringify(promptData)
+    });
+  },
+  
+  /**
+   * Get AI conversation history
+   * @returns {Promise<Object>} - Conversation history
+   */
+  getHistory: async () => {
+    return await handleRequest('/ai/history');
+  },
+  
+  /**
+   * Get conversation thread
+   * @param {string} id - Conversation ID
+   * @returns {Promise<Object>} - Conversation thread
+   */
+  getConversationThread: async (id) => {
+    return await handleRequest(`/ai/thread/${id}`);
+  },
+  
+  /**
+   * Delete a conversation from history
+   * @param {number} id - Conversation ID
+   * @returns {Promise<Object>} - Response data
+   */
+  deleteConversation: async (id) => {
+    return await handleRequest(`/ai/history/${id}`, {
+      method: 'DELETE'
+    });
+  },
+  
+  /**
+   * Delete all conversations
+   * @returns {Promise<Object>} - Response data
+   */
+  deleteAllConversations: async () => {
+    return await handleRequest('/ai/history', {
+      method: 'DELETE'
+    });
+  }
+};
+
 // Export API service
 export default {
   auth,
-  todos
+  todos,
+  ai,
+  ...http  // 导出通用HTTP方法
 }; 

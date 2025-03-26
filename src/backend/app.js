@@ -11,9 +11,23 @@ const morgan = require('morgan');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 const config = require('./config/app');
+const initAllTables = require('./scripts/db-init');
 
 // Create Express application
 const app = express();
+
+// 初始化数据库表
+initAllTables()
+  .then(success => {
+    if (success) {
+      console.log('Database ready for use');
+    } else {
+      console.warn('Database initialization had issues, but app will continue');
+    }
+  })
+  .catch(err => {
+    console.error('Failed to initialize database:', err);
+  });
 
 // Security middleware
 app.use(helmet({
